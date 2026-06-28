@@ -63,6 +63,7 @@
   @media (max-width: 768px) {
     .about-section { padding: 60px 24px 100px; }
     .collage { overflow: visible; }
+    .about-cta { padding-top: 180px !important; }
     .size-sm { width: 140px; height: 186px; }
     .size-md { width: 170px; height: 226px; }
     .size-lg { width: 205px; height: 272px; }
@@ -976,7 +977,7 @@
 <section class="about-section">
   <div class="collage" id="collage"></div>
 
-  <div style="display:flex;justify-content:center;padding:80px 0 20px;">
+  <div class="about-cta" style="display:flex;justify-content:center;padding:80px 0 20px;">
     <button onclick="document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));document.querySelector('[data-tab=cases]').classList.add('active');document.getElementById('tab-cases').classList.add('active');window.scrollTo({top:0,behavior:'smooth'});" style="background:#111;color:#fff;border:none;font-family:'Lebowski',sans-serif;font-size:1.1rem;letter-spacing:0.18em;text-transform:uppercase;padding:32px 100px;cursor:pointer;border-radius:300px;transition:background 0.15s;width:335px;max-width:100%;" onmouseover="this.style.background='#1a4fd6';this.style.opacity='1'" onmouseout="this.style.background='#111';this.style.opacity='1'" data-i18n="btn_ponyatno">ПОНЯТНО</button>
   </div>
 </section>
