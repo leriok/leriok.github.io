@@ -526,6 +526,11 @@
 .lang-btn { font-family:'Lebowski',sans-serif; font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; background:none; border:none; cursor:pointer; padding:4px 6px; color:#bbb; transition:color 0.15s; line-height:1; }
 .lang-btn.active { color:#111; }
 .lang-sep { font-size:0.65rem; color:#ddd; line-height:1; user-select:none; }
+
+  @media (max-width: 699px) {
+    .topbar { padding: 0 16px; gap: 6px; }
+    .topbar-sep, .topbar-current { display: none; }
+  }
 </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
