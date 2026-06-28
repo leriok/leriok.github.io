@@ -71,6 +71,36 @@
     .vid-square { width: 200px; height: 200px; }
   }
 
+  /* ── Mobile photo grid ── */
+  @media (max-width: 699px) {
+    .collage.mobile-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+    }
+    .collage.mobile-grid .item-wrap {
+      width: 100% !important;
+      height: auto !important;
+      aspect-ratio: 3 / 4;
+      position: relative;
+      overflow: hidden;
+    }
+    .collage.mobile-grid .item-wrap.wide {
+      grid-column: span 2;
+      aspect-ratio: 16 / 9;
+    }
+    .collage.mobile-grid .media-el {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100% !important;
+      height: 100% !important;
+      transform: none !important;
+    }
+    .collage.mobile-grid .play-btn {
+      bottom: 8px; right: 8px;
+    }
+  }
+
   /* ── Tab navigation ── */
   .tab-nav {
     position: sticky;
@@ -1081,6 +1111,36 @@ function seededRng(seed) {
 
 function buildCollage() {
   const collage = document.getElementById('collage');
+  const isMobile = window.innerWidth < 700;
+
+  if (isMobile) {
+    collage.classList.add('mobile-grid');
+    items.forEach((item, i) => {
+      const wrap = document.createElement('div');
+      const isWideVideo = item.type === 'video' && item.shape === 'square';
+      wrap.className = 'item-wrap' + (item.type === 'video' ? ' has-video' : '') + (isWideVideo ? ' wide' : '');
+
+      if (item.type === 'photo') {
+        const img = document.createElement('img');
+        img.className = 'media-el';
+        img.src = item.src; img.alt = ''; img.loading = 'lazy';
+        wrap.appendChild(img);
+      } else {
+        const vid = document.createElement('video');
+        vid.className = 'media-el';
+        vid.src = item.src; vid.poster = item.poster;
+        vid.loop = true; vid.muted = true; vid.playsInline = true; vid.preload = 'none';
+        wrap.addEventListener('click', () => vid.paused ? (vid.play(), wrap.classList.add('is-playing')) : (vid.pause(), wrap.classList.remove('is-playing')));
+        const btn = document.createElement('div');
+        btn.className = 'play-btn';
+        btn.innerHTML = `<svg class="icon-play" viewBox="0 0 16 16" fill="none"><polygon points="4,2 13,8 4,14" fill="#111"/></svg><svg class="icon-pause" viewBox="0 0 16 16" fill="none"><rect x="3" y="2" width="4" height="12" rx="1" fill="#111"/><rect x="9" y="2" width="4" height="12" rx="1" fill="#111"/></svg>`;
+        wrap.appendChild(vid); wrap.appendChild(btn);
+      }
+      collage.appendChild(wrap);
+    });
+    return;
+  }
+
   const rng = seededRng(17);
   const aligns = ['flex-start','center','flex-end','center','flex-start','flex-end','center','flex-start'];
 
