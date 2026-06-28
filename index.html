@@ -63,7 +63,7 @@
   .vid-square { width: 255px; height: 255px; }
   @media (max-width: 768px) {
     .about-section { padding: 60px 24px 100px; }
-    .collage { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-left: -24px; margin-right: -24px; padding: 0 24px 24px; }
+    .collage { overflow: visible; }
     .size-sm { width: 140px; height: 186px; }
     .size-md { width: 170px; height: 226px; }
     .size-lg { width: 205px; height: 272px; }
@@ -1084,6 +1084,7 @@ function seededRng(seed) {
 
 function buildCollage() {
   const collage = document.getElementById('collage');
+  const isMobile = window.innerWidth < 700;
   const rng = seededRng(17);
   const aligns = ['flex-start','center','flex-end','center','flex-start','flex-end','center','flex-start'];
 
@@ -1093,10 +1094,10 @@ function buildCollage() {
     cluster.className = 'cluster';
     cluster.style.justifyContent = aligns[row % aligns.length];
     cluster.style.marginBottom = (-35 - rng() * 45) + 'px';
-    cluster.style.marginLeft = (rng() * 80 - 40) + 'px';
+    cluster.style.marginLeft = isMobile ? (rng() * 20 - 10) + 'px' : (rng() * 80 - 40) + 'px';
     if (row === 0) cluster.style.marginTop = '20px';
 
-    const rowSize = Math.min(4, items.length - idx);
+    const rowSize = Math.min(isMobile ? 2 : 4, items.length - idx);
     for (let i = 0; i < rowSize; i++, idx++) {
       const item = items[idx];
       const wrap = document.createElement('div');
