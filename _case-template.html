@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- TODO: TITLE — замени "Название" -->
+<title>Название — Кейс · Валерия Шкарбан</title>
+<meta name="description" content="TODO: DESC_RU — одно–два предложения о проекте (RU).">
+<meta name="author" content="Валерия Шкарбан">
+<meta property="og:type" content="website">
+<!-- TODO: SLUG — имя файла без .html -->
+<meta property="og:url" content="https://leri-ok.ru/TODO-SLUG.html">
+<meta property="og:title" content="Название — Кейс · Валерия Шкарбан">
+<meta property="og:description" content="TODO: DESC_RU">
+<!-- TODO: OG_IMAGE — путь к hero-картинке -->
+<meta property="og:image" content="https://leri-ok.ru/cases/TODO-hero.webp">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:site_name" content="Валерия Шкарбан">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Название — Кейс · Валерия Шкарбан">
+<meta name="twitter:description" content="TODO: DESC_RU">
+<meta name="twitter:image" content="https://leri-ok.ru/cases/TODO-hero.webp">
+<style>
+  @font-face {
+    font-family: 'Lebowski';
+    src: url('Lebowski by Pragmatica/Lebowski by Pragmatica Regular.woff2') format('woff2'),
+         url('Lebowski by Pragmatica/Lebowski by Pragmatica Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: white;
+    color: #111;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  /* ── Top bar ── */
+  .topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: white;
+    height: 56px;
+    box-shadow: 0 1px 0 #f0f0f0;
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    gap: 8px;
+  }
+
+  .back-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    color: #999;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    transition: color 0.15s;
+  }
+  .back-link:hover { color: #111; }
+  .discuss-btn {
+    margin-left: 0;
+    font-family: 'Lebowski', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: white;
+    text-decoration: none;
+    background: #111;
+    padding: 8px 20px;
+    border-radius: 20px;
+    line-height: 1.4;
+    display: flex;
+    align-items: center;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+  .discuss-btn:hover { background: #1a4fd6; }
+
+  .topbar-sep { color: #ddd; font-size: 0.8rem; }
+  .topbar-current { font-size: 0.78rem; color: #111; letter-spacing: 0.04em; }
+
+  /* ── Bottom dot nav ── */
+  .dot-nav {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    background: white;
+    border: 1px solid #ebebeb;
+    border-radius: 40px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  }
+
+  .dot-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 20px;
+    transition: background 0.15s;
+    text-decoration: none;
+  }
+  .dot-btn:hover { background: #f5f5f5; }
+
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #ddd;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .dot-btn.active .dot {
+    background: #1a4fd6;
+    width: 20px;
+    border-radius: 4px;
+  }
+
+  .dot-label {
+    font-size: 0.7rem;
+    color: #999;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    max-width: 0;
+    overflow: hidden;
+    transition: max-width 0.2s, opacity 0.2s;
+    opacity: 0;
+  }
+  .dot-btn.active .dot-label {
+    max-width: 120px;
+    opacity: 1;
+    color: #1a4fd6;
+  }
+
+  /* ── Main ── */
+  .page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 90px 40px 160px;
+  }
+
+  /* ── Project meta header ── */
+  .project-meta {
+    display: flex;
+    gap: 48px;
+    padding: 32px 0 40px;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 64px;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {}
+  .meta-key {
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #bbb;
+    margin-bottom: 4px;
+  }
+  .meta-val {
+    font-size: 0.85rem;
+    color: #555;
+  }
+  .meta-val a { color: inherit; text-decoration: none; }
+  .meta-val a:hover { color: #111; }
+
+  .meta-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 2px;
+  }
+  .tag {
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #888;
+    border: 1px solid #e4e4e4;
+    padding: 3px 9px;
+    border-radius: 20px;
+  }
+
+  /* ── Hero ── */
+  .hero { margin-bottom: 32px; }
+
+  .hero-title {
+    font-family: 'Lebowski', sans-serif;
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    color: #111;
+    margin-bottom: 20px;
+  }
+
+  .hero-desc {
+    font-size: 1.05rem;
+    color: #777;
+    max-width: 560px;
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  /* ── Sections ── */
+  .section {
+    margin-bottom: 80px;
+    scroll-margin-top: 80px;
+  }
+
+  .section-eyebrow {
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #1a4fd6;
+    margin-bottom: 10px;
+  }
+
+  .section-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    color: #111;
+    margin-bottom: 20px;
+    line-height: 1.15;
+  }
+
+  .body-text {
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.8;
+    max-width: 640px;
+  }
+  .body-text + .body-text { margin-top: 14px; }
+
+  /* ── Phase block ── */
+  .phase {
+    margin: 44px 0 0;
+    padding-top: 32px;
+    border-top: 1px solid #f5f5f5;
+    scroll-margin-top: 80px;
+  }
+
+  .phase-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .phase-num {
+    width: 26px;
+    height: 26px;
+    background: #1a4fd6;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Lebowski', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .phase-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #111;
+    letter-spacing: -0.01em;
+  }
+
+  /* ── Callout ── */
+  .callout {
+    background: #f6f6f6;
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    max-width: 640px;
+  }
+  .callout-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #bbb;
+    margin-bottom: 8px;
+  }
+  .callout-text {
+    font-size: 0.95rem;
+    color: #333;
+    line-height: 1.6;
+  }
+
+  .callout-dark {
+    background: #eef3ff;
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    max-width: 640px;
+  }
+  .callout-dark .callout-label { color: #7b9de0; }
+  .callout-dark .callout-text { color: #1a3470; }
+
+  /* ── Key points grid ── */
+  .keypoints {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 28px 0;
+    max-width: 640px;
+  }
+  .kp {
+    padding: 20px;
+    border: 1px solid #ebebeb;
+    border-radius: 10px;
+  }
+  .kp-icon { font-size: 1rem; margin-bottom: 8px; }
+  .kp-title {
+    font-family: 'Lebowski', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #111;
+    margin-bottom: 5px;
+  }
+  .kp-text { font-size: 0.78rem; color: #999; line-height: 1.55; }
+
+  /* ── Results list ── */
+  .results-list { margin: 28px 0; max-width: 640px; }
+  .result-item {
+    display: flex;
+    gap: 14px;
+    padding: 18px 0;
+    border-bottom: 1px solid #f5f5f5;
+  }
+  .result-item:last-child { border-bottom: none; }
+  .result-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #1a4fd6;
+    flex-shrink: 0;
+    margin-top: 8px;
+  }
+  .result-text { font-size: 0.9rem; color: #555; line-height: 1.55; }
+
+  /* ── Team ── */
+  .team-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+    max-width: 640px;
+  }
+  .team-tag {
+    font-size: 0.72rem;
+    color: #666;
+    border: 1px solid #ebebeb;
+    padding: 5px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.01em;
+  }
+
+  /* ── Footer ── */
+  .page-footer {
+    border-top: 1px solid #f0f0f0;
+    padding-top: 40px;
+    margin-top: 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .footer-back {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    color: #999;
+    font-size: 0.8rem;
+    transition: color 0.15s;
+  }
+  .footer-back:hover { color: #111; }
+  .footer-next { text-decoration: none; }
+  .footer-next-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #bbb;
+    text-align: right;
+    display: block;
+    margin-bottom: 3px;
+  }
+  .footer-next-title {
+    font-family: 'Lebowski', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #111;
+  }
+
+  /* ── Case images ── */
+  .case-img { display: block; width: 100%; height: auto; border-radius: 10px; }
+
+  /* ── Site footer ── */
+  .site-footer {
+    border-top: 1px solid #f0f0f0;
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+  }
+  .site-footer-copy {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    color: #bbb;
+    letter-spacing: 0.02em;
+  }
+  .site-footer-font {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    color: #bbb;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .site-footer-font:hover { color: #111; }
+
+  /* ── Lang toggle ── */
+  .lang-toggle { display:flex; align-items:center; gap:0; margin-left:auto; margin-right:8px; flex-shrink:0; }
+  .lang-btn { font-family:'Lebowski',sans-serif; font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; background:none; border:none; cursor:pointer; padding:4px 6px; color:#bbb; transition:color 0.15s; line-height:1; }
+  .lang-btn.active { color:#111; }
+  .lang-sep { font-size:0.65rem; color:#ddd; line-height:1; user-select:none; }
+
+  @media (max-width: 640px) {
+    .page { padding: 80px 24px 140px; }
+    .topbar { padding: 0 20px; }
+    .keypoints { grid-template-columns: 1fr; }
+    .project-meta { gap: 24px; }
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- Top bar -->
+<nav class="topbar">
+  <a href="about-me.html#cases" class="back-link" onclick="localStorage.setItem('activeTab','cases')">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+      <path d="M8 2L3 6.5L8 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span data-i18n="back">Кейсы</span>
+  </a>
+  <span class="topbar-sep">/</span>
+  <!-- TODO: TITLE — название кейса в хлебных крошках -->
+  <span class="topbar-current">Название</span>
+  <div class="lang-toggle">
+    <button class="lang-btn active" id="btnRU" onclick="setLang('ru')">RU</button>
+    <span class="lang-sep">/</span>
+    <button class="lang-btn" id="btnEN" onclick="setLang('en')">EN</button>
+  </div>
+  <a href="https://t.me/leri_ok" target="_blank" class="discuss-btn" data-i18n="discuss">Обсудить</a>
+</nav>
+
+<!-- Bottom dot navigation (4 раздела) -->
+<nav class="dot-nav" id="dotNav">
+  <a href="#overview" class="dot-btn active" data-section="overview">
+    <span class="dot"></span>
+    <span class="dot-label" data-i18n="dot_0">Обзор</span>
+  </a>
+  <a href="#insight" class="dot-btn" data-section="insight">
+    <span class="dot"></span>
+    <span class="dot-label" data-i18n="dot_1">Задача</span>
+  </a>
+  <a href="#process" class="dot-btn" data-section="process">
+    <span class="dot"></span>
+    <span class="dot-label" data-i18n="dot_2">Процесс</span>
+  </a>
+  <a href="#results" class="dot-btn" data-section="results">
+    <span class="dot"></span>
+    <span class="dot-label" data-i18n="dot_3">Результат</span>
+  </a>
+</nav>
+
+<!-- Content -->
+<div class="page">
+
+  <!-- Project meta -->
+  <div class="project-meta">
+    <div class="meta-item">
+      <p class="meta-key" data-i18n="meta_client">Клиент</p>
+      <!-- TODO: CLIENT_URL — замени ссылку или убери <a> если нет сайта -->
+      <p class="meta-val"><a href="TODO-CLIENT_URL" target="_blank">Название клиента ↗</a></p>
+    </div>
+    <div class="meta-item">
+      <p class="meta-key" data-i18n="meta_period">Период</p>
+      <!-- TODO: META_PERIOD_RU -->
+      <p class="meta-val" data-i18n="meta_period_val">2024 — н.в.</p>
+    </div>
+    <div class="meta-item">
+      <p class="meta-key" data-i18n="meta_role">Роль</p>
+      <!-- TODO: роль, не переводится -->
+      <p class="meta-val">Product designer</p>
+    </div>
+    <div class="meta-item">
+      <p class="meta-key" data-i18n="meta_type">Тип</p>
+      <div class="meta-tags">
+        <!-- TODO: теги типа проекта, не переводятся -->
+        <span class="tag">UX</span>
+        <span class="tag">UI</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <section class="hero" id="overview">
+    <!-- TODO: TITLE -->
+    <h1 class="hero-title">Название кейса</h1>
+    <p class="hero-desc" data-i18n="hero_desc">TODO: hero_desc RU — краткое описание проекта, 2–3 предложения.</p>
+  </section>
+
+  <!-- TODO: HERO_IMG -->
+  <img class="case-img" src="cases/TODO-hero.webp" alt="Название кейса" style="margin:16px 0 72px;">
+
+  <!-- ─── СЕКЦИЯ: Задача ─── -->
+  <section class="section" id="insight">
+    <p class="section-eyebrow" data-i18n="eyebrow_0">Задача</p>
+    <h2 class="section-title" data-i18n="title_0">TODO: title_0</h2>
+
+    <p class="body-text" data-i18n="body_0">TODO: body_0</p>
+    <p class="body-text" data-i18n="body_1">TODO: body_1</p>
+
+    <!-- Опционально: callout с ключевой задачей -->
+    <div class="callout-dark">
+      <p class="callout-label">Ключевая задача</p>
+      <p class="callout-text">TODO: сформулируй главный вызов одним абзацем.</p>
+    </div>
+
+    <!-- Опционально: 4 карточки с ключевыми аспектами -->
+    <!--
+    <div class="keypoints">
+      <div class="kp">
+        <div class="kp-icon">🎯</div>
+        <p class="kp-title">Заголовок</p>
+        <p class="kp-text">Описание.</p>
+      </div>
+    </div>
+    -->
+  </section>
+
+  <!-- ─── СЕКЦИЯ: Процесс ─── -->
+  <section class="section" id="process">
+    <p class="section-eyebrow" data-i18n="eyebrow_1">Процесс</p>
+    <h2 class="section-title" data-i18n="title_1">TODO: title_1</h2>
+    <p class="body-text" data-i18n="body_2">TODO: body_2 — вводное описание процесса.</p>
+
+    <!-- Фаза 1 -->
+    <div class="phase">
+      <div class="phase-head">
+        <span class="phase-num">1</span>
+        <span class="phase-title" data-i18n="phase_0">TODO: phase_0</span>
+      </div>
+      <p class="body-text" data-i18n="body_3">TODO: body_3</p>
+      <!-- TODO: добавь <img class="case-img" src="cases/...webp" ...> -->
+    </div>
+
+    <!-- Фаза 2 -->
+    <div class="phase">
+      <div class="phase-head">
+        <span class="phase-num">2</span>
+        <span class="phase-title" data-i18n="phase_1">TODO: phase_1</span>
+      </div>
+      <p class="body-text" data-i18n="body_4">TODO: body_4</p>
+    </div>
+
+    <!-- Фаза 3 (удали если не нужна) -->
+    <div class="phase">
+      <div class="phase-head">
+        <span class="phase-num">3</span>
+        <span class="phase-title" data-i18n="phase_2">TODO: phase_2</span>
+      </div>
+      <p class="body-text" data-i18n="body_5">TODO: body_5</p>
+    </div>
+  </section>
+
+  <!-- ─── СЕКЦИЯ: Результат ─── -->
+  <section class="section" id="results">
+    <p class="section-eyebrow" data-i18n="eyebrow_2">Результат</p>
+    <h2 class="section-title" data-i18n="title_2">TODO: title_2</h2>
+    <p class="body-text" data-i18n="body_6">TODO: body_6 — итоговый вывод.</p>
+
+    <div class="results-list">
+      <div class="result-item">
+        <div class="result-dot"></div>
+        <p class="result-text" data-i18n="result_0">TODO: result_0</p>
+      </div>
+      <div class="result-item">
+        <div class="result-dot"></div>
+        <p class="result-text" data-i18n="result_1">TODO: result_1</p>
+      </div>
+      <div class="result-item">
+        <div class="result-dot"></div>
+        <p class="result-text" data-i18n="result_2">TODO: result_2</p>
+      </div>
+      <!-- Добавляй/удаляй .result-item по необходимости -->
+    </div>
+
+    <!-- Опционально: команда -->
+    <!--
+    <p class="section-eyebrow" style="margin-top:48px;" data-i18n="eyebrow_3">Команда</p>
+    <div class="team-row">
+      <span class="team-tag">Product designer</span>
+      <span class="team-tag">PM</span>
+    </div>
+    -->
+  </section>
+
+  <!-- Footer кейса -->
+  <div class="page-footer">
+    <a href="about-me.html#cases" class="footer-back" onclick="localStorage.setItem('activeTab','cases')" aria-label="Все кейсы">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+        <path d="M8 2L3 6.5L8 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span data-i18n="footer_back">Все кейсы</span>
+    </a>
+    <!-- TODO: NEXT_CASE — имя следующего файла и его заголовок. Удали блок если это последний кейс. -->
+    <a href="следующий-кейс.html" class="footer-next" aria-label="Следующий кейс">
+      <span class="footer-next-label" data-i18n="footer_next_label">Следующий кейс</span>
+      <span class="footer-next-title">Следующий кейс →</span>
+    </a>
+  </div>
+
+</div><!-- /.page -->
+
+<footer class="site-footer">
+  <span class="site-footer-copy">© 2026 Валерия Шкарбан</span>
+  <a href="https://www.pragmatica.design/lebowski" target="_blank" class="site-footer-font">Шрифт — Lebowski by Pragmatica</a>
+</footer>
+
+<script>
+  /* ── Dot nav — подсветка текущей секции ── */
+  const sections = ['overview','insight','process','results'];
+  const dots = document.querySelectorAll('.dot-btn');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        dots.forEach(d => d.classList.remove('active'));
+        const match = document.querySelector(`.dot-btn[data-section="${entry.target.id}"]`);
+        if (match) match.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) observer.observe(el);
+  });
+</script>
+
+<script>
+/* ── Переводы ── */
+/* ИНСТРУКЦИЯ:
+   - Заполни все TODO: значения
+   - ru и en должны иметь одинаковые ключи
+   - Числа body_N, result_N, phase_N должны совпадать
+   - Не удаляй: back, discuss, footer_back, footer_next_label, meta_client, meta_period, meta_role, meta_type
+*/
+const translations = {
+  ru: {
+    back: 'Кейсы',
+    discuss: 'Обсудить',
+    footer_back: 'Все кейсы',
+    footer_next_label: 'Следующий кейс',
+
+    hero_desc: 'TODO: hero_desc RU',
+
+    dot_0: 'Обзор',
+    dot_1: 'Задача',
+    dot_2: 'Процесс',
+    dot_3: 'Результат',
+
+    eyebrow_0: 'Задача',
+    eyebrow_1: 'Процесс',
+    eyebrow_2: 'Результат',
+    /* eyebrow_3: 'Команда', */ // раскомментировать если нужно
+
+    title_0: 'TODO: title_0',
+    title_1: 'TODO: title_1',
+    title_2: 'TODO: title_2',
+
+    body_0: 'TODO: body_0',
+    body_1: 'TODO: body_1',
+    body_2: 'TODO: body_2',
+    body_3: 'TODO: body_3',
+    body_4: 'TODO: body_4',
+    body_5: 'TODO: body_5',
+    body_6: 'TODO: body_6',
+
+    phase_0: 'TODO: phase_0',
+    phase_1: 'TODO: phase_1',
+    phase_2: 'TODO: phase_2',
+
+    result_0: 'TODO: result_0',
+    result_1: 'TODO: result_1',
+    result_2: 'TODO: result_2',
+
+    meta_client: 'Клиент',
+    meta_period: 'Период',
+    meta_role: 'Роль',
+    meta_type: 'Тип',
+    meta_period_val: 'TODO: META_PERIOD_RU'  // напр. '2024 — н.в.'
+  },
+  en: {
+    back: 'Cases',
+    discuss: 'Discuss',
+    footer_back: 'All cases',
+    footer_next_label: 'Next case',
+
+    hero_desc: 'TODO: hero_desc EN',
+
+    dot_0: 'Overview',
+    dot_1: 'Task',
+    dot_2: 'Process',
+    dot_3: 'Results',
+
+    eyebrow_0: 'Task',
+    eyebrow_1: 'Process',
+    eyebrow_2: 'Results',
+    /* eyebrow_3: 'Team', */
+
+    title_0: 'TODO: title_0 EN',
+    title_1: 'TODO: title_1 EN',
+    title_2: 'TODO: title_2 EN',
+
+    body_0: 'TODO: body_0 EN',
+    body_1: 'TODO: body_1 EN',
+    body_2: 'TODO: body_2 EN',
+    body_3: 'TODO: body_3 EN',
+    body_4: 'TODO: body_4 EN',
+    body_5: 'TODO: body_5 EN',
+    body_6: 'TODO: body_6 EN',
+
+    phase_0: 'TODO: phase_0 EN',
+    phase_1: 'TODO: phase_1 EN',
+    phase_2: 'TODO: phase_2 EN',
+
+    result_0: 'TODO: result_0 EN',
+    result_1: 'TODO: result_1 EN',
+    result_2: 'TODO: result_2 EN',
+
+    meta_client: 'Client',
+    meta_period: 'Period',
+    meta_role: 'Role',
+    meta_type: 'Type',
+    meta_period_val: 'TODO: META_PERIOD_EN'  // напр. '2024 — present'
+  }
+};
+
+function setLang(lang) {
+  localStorage.setItem('siteLang', lang);
+  document.getElementById('btnRU').classList.toggle('active', lang === 'ru');
+  document.getElementById('btnEN').classList.toggle('active', lang === 'en');
+  const t = translations[lang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    if (t[el.dataset.i18n] !== undefined) el.textContent = t[el.dataset.i18n];
+  });
+}
+
+(function () {
+  const s = localStorage.getItem('siteLang');
+  if (s === 'en') setLang('en');
+  else document.getElementById('btnRU').classList.add('active');
+})();
+</script>
+</body>
+</html>

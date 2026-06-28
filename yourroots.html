@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YourRoots Map — Кейс · Валерия Шкарбан</title>
+<meta name="description" content="Платформа для визуализации семейной истории на карте. Проектирование с нуля: от прототипа до запуска, AI-инструменты.">
+<meta name="author" content="Валерия Шкарбан">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://leri-ok.ru/yourroots.html">
+<meta property="og:title" content="YourRoots Map — Кейс · Валерия Шкарбан">
+<meta property="og:description" content="Платформа для визуализации семейной истории на карте. Проектирование с нуля: от прототипа до запуска, AI-инструменты.">
+<meta property="og:image" content="https://leri-ok.ru/cases/YourRoots case cover.webp">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:site_name" content="Валерия Шкарбан">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="YourRoots Map — Кейс · Валерия Шкарбан">
+<meta name="twitter:description" content="Платформа для визуализации семейной истории на карте. Проектирование с нуля: от прототипа до запуска, AI-инструменты.">
+<meta name="twitter:image" content="https://leri-ok.ru/cases/YourRoots case cover.webp">
+<style>
+  @font-face {
+    font-family: 'Lebowski';
+    src: url('Lebowski by Pragmatica/Lebowski by Pragmatica Regular.woff2') format('woff2'),
+         url('Lebowski by Pragmatica/Lebowski by Pragmatica Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: white;
+    color: #111;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  /* ── Top bar ── */
+  .topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: white;
+    height: 56px;
+    box-shadow: 0 1px 0 #f0f0f0;
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    gap: 8px;
+  }
+
+  .back-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    color: #999;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    transition: color 0.15s;
+  }
+  .back-link:hover { color: #111; }
+  .discuss-btn {
+    margin-left: 0;
+    font-family: 'Lebowski', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: white;
+    text-decoration: none;
+    background: #111;
+    padding: 8px 20px;
+    border-radius: 20px;
+    line-height: 1.4;
+    display: flex;
+    align-items: center;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+  .discuss-btn:hover { background: #1a4fd6; }
+
+
+  .topbar-sep { color: #ddd; font-size: 0.8rem; }
+  .topbar-current { font-size: 0.78rem; color: #111; letter-spacing: 0.04em; }
+
+  /* ── Bottom dot nav ── */
+  .dot-nav {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    background: white;
+    border: 1px solid #ebebeb;
+    border-radius: 40px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  }
+
+  .dot-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 20px;
+    transition: background 0.15s;
+    text-decoration: none;
+  }
+  .dot-btn:hover { background: #f5f5f5; }
+
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #ddd;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .dot-btn.active .dot {
+    background: #1a4fd6;
+    width: 20px;
+    border-radius: 4px;
+  }
+
+  .dot-label {
+    font-size: 0.7rem;
+    color: #999;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    max-width: 0;
+    overflow: hidden;
+    transition: max-width 0.2s, opacity 0.2s;
+    opacity: 0;
+  }
+  .dot-btn.active .dot-label {
+    max-width: 120px;
+    opacity: 1;
+    color: #1a4fd6;
+  }
+
+  /* ── Main ── */
+  .page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 90px 40px 160px;
+  }
+
+  /* ── Project meta header ── */
+  .project-meta {
+    display: flex;
+    gap: 48px;
+    padding: 32px 0 40px;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 64px;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {}
+  .meta-key {
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #bbb;
+    margin-bottom: 4px;
+  }
+  .meta-val {
+    font-size: 0.85rem;
+    color: #555;
+  }
+  .meta-val a { color: inherit; text-decoration: none; }
+  .meta-val a:hover { color: #111; }
+
+  .meta-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 2px;
+  }
+  .tag {
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #888;
+    border: 1px solid #e4e4e4;
+    padding: 3px 9px;
+    border-radius: 20px;
+  }
+
+  /* ── Hero ── */
+  .hero { margin-bottom: 32px; }
+
+  .hero-title {
+    font-family: 'Lebowski', sans-serif;
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    color: #111;
+    margin-bottom: 20px;
+  }
+
+  .hero-desc {
+    font-size: 1.05rem;
+    color: #777;
+    max-width: 560px;
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  /* ── Sections ── */
+  .section {
+    margin-bottom: 80px;
+    scroll-margin-top: 80px;
+  }
+
+  .section-eyebrow {
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #1a4fd6;
+    margin-bottom: 10px;
+  }
+
+  .section-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    color: #111;
+    margin-bottom: 20px;
+    line-height: 1.15;
+  }
+
+  .body-text {
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.8;
+    max-width: 640px;
+  }
+
+  .body-text + .body-text { margin-top: 14px; }
+
+  /* ── Phase block ── */
+  .phase {
+    margin: 44px 0 0;
+    padding-top: 32px;
+    border-top: 1px solid #f5f5f5;
+    scroll-margin-top: 80px;
+  }
+
+  .phase-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .phase-num {
+    width: 26px;
+    height: 26px;
+    background: #1a4fd6;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Lebowski', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .phase-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #111;
+    letter-spacing: -0.01em;
+  }
+
+  /* ── Screenshot placeholder ── */
+  .shot {
+    width: 100%;
+    background: #fafafa;
+    border: 1.5px dashed #e4e4e4;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 28px 0;
+    color: #ccc;
+  }
+  .shot-lg { min-height: 400px; }
+  .shot-md { min-height: 300px; }
+  .shot-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #ccc;
+  }
+  .shot-icon {
+    width: 32px; height: 32px;
+    border: 1.5px dashed #ddd;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .shot-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 28px 0;
+  }
+  .shot-row .shot { margin: 0; }
+
+  /* ── Callout ── */
+  .callout {
+    background: #f6f6f6;
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    max-width: 640px;
+  }
+  .callout-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #bbb;
+    margin-bottom: 8px;
+  }
+  .callout-text {
+    font-size: 0.95rem;
+    color: #333;
+    line-height: 1.6;
+  }
+
+  .callout-dark {
+    background: #eef3ff;
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    max-width: 640px;
+  }
+  .callout-dark .callout-label { color: #7b9de0; }
+  .callout-dark .callout-text { color: #1a3470; }
+
+  /* ── Key points ── */
+  .keypoints {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 28px 0;
+    max-width: 640px;
+  }
+  .kp {
+    padding: 20px;
+    border: 1px solid #ebebeb;
+    border-radius: 10px;
+  }
+  .kp-icon { font-size: 1rem; margin-bottom: 8px; }
+  .kp-title {
+    font-family: 'Lebowski', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #111;
+    margin-bottom: 5px;
+  }
+  .kp-text { font-size: 0.78rem; color: #999; line-height: 1.55; }
+
+  /* ── Results ── */
+  .results { max-width: 640px; margin: 20px 0; }
+  .result-row {
+    display: flex;
+    gap: 14px;
+    padding: 16px 0;
+    border-bottom: 1px solid #f2f2f2;
+    align-items: flex-start;
+  }
+  .result-row:last-child { border-bottom: none; }
+  .result-dot {
+    width: 20px; height: 20px;
+    background: #1a4fd6;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .result-text { font-size: 0.9rem; color: #555; line-height: 1.55; }
+  .result-text strong { color: #111; }
+
+  /* ── Team ── */
+  .team-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 14px;
+  }
+  .pill {
+    font-size: 0.75rem;
+    color: #666;
+    background: #f5f5f5;
+    padding: 5px 13px;
+    border-radius: 20px;
+  }
+
+  /* ── Footer ── */
+  .page-footer {
+    border-top: 1px solid #f0f0f0;
+    padding-top: 40px;
+    margin-top: 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .footer-back {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    color: #999;
+    font-size: 0.8rem;
+    transition: color 0.15s;
+  }
+  .footer-back:hover { color: #111; }
+  .footer-next { text-decoration: none; }
+  .footer-next-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #bbb;
+    text-align: right;
+    display: block;
+    margin-bottom: 3px;
+  }
+  .footer-next-title {
+    font-family: 'Lebowski', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #111;
+  }
+
+  @media (max-width: 640px) {
+    .page { padding: 80px 24px 140px; }
+    .keypoints { grid-template-columns: 1fr; }
+    .shot-row { grid-template-columns: 1fr; }
+    .project-meta { gap: 28px; }
+    .dot-nav { bottom: 20px; padding: 8px 14px; }
+  }
+
+  /* Body text — Inter */
+  .hero-desc, .body-text, .meta-val, .result-text, .callout-text,
+  .cv-role, .cv-company, .cv-date, .cv-desc, .cv-skills,
+  .about-bio, .about-desc, .section-body,
+  .help-sub { font-family: 'Inter', sans-serif; }
+
+  /* ── Site footer ── */
+  .site-footer {
+    border-top: 1px solid #f0f0f0;
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+  }
+  .site-footer-copy {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    color: #bbb;
+    letter-spacing: 0.02em;
+  }
+  .site-footer-font {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    color: #bbb;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .site-footer-font:hover { color: #111; }
+.lang-toggle { display:flex; align-items:center; gap:0; margin-left:auto; margin-right:8px; flex-shrink:0; }
+.lang-btn { font-family:'Lebowski',sans-serif; font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; background:none; border:none; cursor:pointer; padding:4px 6px; color:#bbb; transition:color 0.15s; line-height:1; }
+.lang-btn.active { color:#111; }
+.lang-sep { font-size:0.65rem; color:#ddd; line-height:1; user-select:none; }
+</style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- Top bar -->
+<nav class="topbar">
+  <a href="about-me.html#cases" class="back-link" onclick="localStorage.setItem('activeTab','cases')">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+      <path d="M8 2L3 6.5L8 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span data-i18n="back">Кейсы</span>
+  </a>
+  <span class="topbar-sep">/</span>
+  <span class="topbar-current">YourRoots Map</span>
+  <div class="lang-toggle">
+  <button class="lang-btn active" id="btnRU" onclick="setLang('ru')">RU</button>
+  <span class="lang-sep">/</span>
+  <button class="lang-btn" id="btnEN" onclick="setLang('en')">EN</button>
+</div>
+  <a href="https://t.me/leri_ok" target="_blank" class="discuss-btn" data-i18n="discuss">Обсудить</a>
+</nav>
+
+<!-- Bottom dot navigation -->
+<nav class="dot-nav" id="dotNav">
+  <a href="#overview" class="dot-btn active" data-section="overview">
+    <span class="dot"></span>
+    <span class="dot-label" data-i18n="dot_0">Обзор</span>
+  </a>
+  <a href="#insight" class="dot-btn" data-section="insight">
+    <span class="dot"></span>
+    <span class="dot-label" data-i18n="dot_1">Идея</span>
+  </a>
+  <a href="#process" class="dot-btn" data-section="process">
+    <span class="dot"></span>
+    <span class="dot-label" data-i18n="dot_2">Процесс</span>
+  </a>
+  <a href="#results" class="dot-btn" data-section="results">
+    <span class="dot"></span>
+    <span class="dot-label" data-i18n="dot_3">Результат</span>
+  </a>
+</nav>
+
+<!-- Content -->
+<div class="page">
+
+  <!-- Project info -->
+  <div class="project-meta">
+    <div class="meta-item">
+      <p class="meta-key" data-i18n="meta_client">Клиент</p>
+      <p class="meta-val"><a href="https://yourroots.com" target="_blank">Genomelink / YourRoots ↗</a></p>
+    </div>
+    <div class="meta-item">
+      <p class="meta-key" data-i18n="meta_period">Период</p>
+      <p class="meta-val" data-i18n="meta_period_val">2025 — н.в.</p>
+    </div>
+    <div class="meta-item">
+      <p class="meta-key" data-i18n="meta_role">Роль</p>
+      <p class="meta-val">UX/UI, Product design</p>
+    </div>
+    <div class="meta-item">
+      <p class="meta-key" data-i18n="meta_type">Тип</p>
+      <div class="meta-tags">
+        <span class="tag">Web</span>
+        <span class="tag">Platform</span>
+        <span class="tag">AI</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <section class="hero" id="overview">
+    <h1 class="hero-title">YourRoots Map</h1>
+    <p class="hero-desc" data-i18n="hero_desc">Платформа для визуализации и изучения семейной истории. Центральный элемент: генеалогическое дерево пользователя на географической карте. Строили с нуля по брифу клиента, итеративно.</p>
+  </section>
+
+<figure style="margin:16px 0 72px;"><img src="photos/yourroots_00.png" alt="Главный экран YourRoots Map" style="width:100%;border-radius:10px;display:block;border:1px solid #e8e8e8;"></figure>
+
+  <!-- Key insight -->
+  <section class="section" id="insight">
+    <p class="section-eyebrow" data-i18n="eyebrow_0">Идея</p>
+    <h2 class="section-title" data-i18n="title_0">Карта как центральный элемент</h2>
+
+    <p class="body-text" data-i18n="body_0">В традиционных генеалогических сервисах в центре линейное дерево: узлы, ветки, плоская схема. Здесь мы сделали географию семьи главным элементом. Каждый предок отображается точкой на карте, линии показывают миграционные пути рода.</p>
+    <p class="body-text" style="margin-top:14px;" data-i18n="body_1">История семьи становится пространственной: видно, откуда пришли предки и как менялась география поколение за поколением.</p>
+
+    <div class="callout-dark">
+      <p class="callout-label">Ключевая фишка</p>
+      <p class="callout-text">В основе платформы: карта с реальными координатами предков и их миграционными путями.</p>
+    </div>
+
+    <div class="keypoints">
+      <div class="kp">
+        <div class="kp-icon">🗺</div>
+        <p class="kp-title">Карта как основа</p>
+        <p class="kp-text">Интерактивная карта — центральный элемент интерфейса, не вспомогательный инструмент.</p>
+      </div>
+      <div class="kp">
+        <div class="kp-icon">🧬</div>
+        <p class="kp-title">ДНК поверх дерева</p>
+        <p class="kp-text">Загружаешь ДНК-файл — появляются древние предки отдельным слоем.</p>
+      </div>
+      <div class="kp">
+        <div class="kp-icon">🤖</div>
+        <p class="kp-title">AI предлагает родственников</p>
+        <p class="kp-text">Система анализирует данные и сама находит вероятных родственников.</p>
+      </div>
+      <div class="kp">
+        <div class="kp-icon">🔗</div>
+        <p class="kp-title">Часть экосистемы</p>
+        <p class="kp-text">Внутри платформы — другие продукты Genomelink: здоровье, происхождение, DNA Match.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Process -->
+  <section class="section" id="process">
+    <p class="section-eyebrow" data-i18n="eyebrow_1">Процесс</p>
+    <h2 class="section-title" data-i18n="title_1">Итеративно, в 4 фазах</h2>
+    <p class="body-text" data-i18n="body_2">Строили с нуля по брифу клиента. Выбрали итеративный подход: после каждой фазы был рабочий продукт, который уже использовали реальные пользователи и давали фидбек.</p>
+
+    <!-- Phase 1 -->
+    <div class="phase" id="phase1">
+      <div class="phase-head">
+        <span class="phase-num">1</span>
+        <span class="phase-title" data-i18n="phase_0">Исследование, прототип, MVP</span>
+      </div>
+      <p class="body-text" data-i18n="body_3">Клиент предоставил пользовательские исследования. На их основе выявили ключевые сценарии использования и спроектировали интерфейс карты с системой фильтров: по линиям рода, временным периодам и типам событий. Фокус на читаемости и навигации при большом объёме данных.</p>
+
+      <figure style="margin:28px 0;"><img src="photos/yourroots_01.png" alt="Map App 1.0" style="width:100%;border-radius:10px;display:block;border:1px solid #e8e8e8;"><figcaption style="font-size:0.7rem;letter-spacing:0.07em;text-transform:uppercase;color:#bbb;margin-top:8px;">Map App 1.0</figcaption></figure>
+    </div>
+
+    <!-- Phase 2 -->
+    <div class="phase" id="phase2">
+      <div class="phase-head">
+        <span class="phase-num">2</span>
+        <span class="phase-title" data-i18n="phase_1">Синхронизация с командой разработки</span>
+      </div>
+      <p class="body-text" data-i18n="body_4">Работа в условиях распределённой команды: разработчики на стороне клиента, разные таймзоны. Провели серию звонков по согласованию компонентов и логики взаимодействия. Создали детальные спецификации для элементов, которые реализовывались без нашего участия. Настроили итеративное прототипирование, часть фич дорабатывалась по мере технических возможностей.</p>
+    </div>
+
+    <!-- Phase 3 -->
+    <div class="phase" id="phase3">
+      <div class="phase-head">
+        <span class="phase-num">3</span>
+        <span class="phase-title" data-i18n="phase_2">ДНК-слои и расширение визуализации</span>
+      </div>
+      <p class="body-text" data-i18n="body_5">После стабилизации базовой версии добавили систему слоёв для отображения древних предков, определяемых через загрузку ДНК-файлов. Разработали визуальное различие между историческими миграциями и установленными семейными связями: разные стили точек и линий.</p>
+
+<figure style="margin:28px 0;"><img src="photos/yourroots_02.png" alt="Map App 2.0 DNA layer" style="width:100%;border-radius:10px;display:block;border:1px solid #e8e8e8;"><figcaption style="font-size:0.7rem;letter-spacing:0.07em;text-transform:uppercase;color:#bbb;margin-top:8px;">Map App 2.0 — ДНК-слой</figcaption></figure>
+    </div>
+
+    <!-- Phase 4 -->
+    <div class="phase" id="phase4">
+      <div class="phase-head">
+        <span class="phase-num">4</span>
+        <span class="phase-title" data-i18n="phase_3">AI Research Tools</span>
+      </div>
+      <p class="body-text" data-i18n="body_6">Реализовали AI-модуль для расширения генеалогического дерева. Система анализирует имеющиеся данные и предлагает вероятных родственников с помощью двух инструментов. Спроектировали интерфейс YourRoots AI Tools так, чтобы он органично встраивался в основной флоу: посмотрел предложение, принял или отклонил, продолжил работу.</p>
+
+<figure style="margin:28px 0;"><img src="photos/yourroots_03.png" alt="AI Research Tools" style="width:100%;border-radius:10px;display:block;border:1px solid #e8e8e8;"><figcaption style="font-size:0.7rem;letter-spacing:0.07em;text-transform:uppercase;color:#bbb;margin-top:8px;">AI Research Tools</figcaption></figure>
+    </div>
+  </section>
+
+  <!-- Results -->
+  <section class="section" id="results">
+    <p class="section-eyebrow" data-i18n="eyebrow_2">Результат</p>
+    <h2 class="section-title" data-i18n="title_2">От MVP до масштабируемой платформы</h2>
+    <p class="body-text" data-i18n="body_7">За несколько итераций продукт вырос от картографической визуализации до платформы с поддержкой ДНК-данных и AI-исследования родословной. Базовый флоу при этом остался простым.</p>
+
+    <div class="results" style="margin-top: 28px;">
+      <div class="result-row">
+        <span class="result-dot">
+          <svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3 5.5L8 1" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <p class="result-text" data-i18n="result_0">Глубокая визуализация — от ближайших родственников до древних предков из ДНК-файла на одной карте</p>
+      </div>
+      <div class="result-row">
+        <span class="result-dot">
+          <svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3 5.5L8 1" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <p class="result-text" data-i18n="result_1">Гибкая архитектура — слои и фильтры позволяют добавлять новые источники данных без переработки интерфейса</p>
+      </div>
+      <div class="result-row">
+        <span class="result-dot">
+          <svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3 5.5L8 1" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <p class="result-text" data-i18n="result_2">Коллаборация с внешней командой — выстроенный процесс спецификаций и итераций с разработчиками на стороне клиента</p>
+      </div>
+
+    </div>
+
+    <div class="callout" style="margin-top:32px;">
+      <p class="callout-label">Статус</p>
+      <p class="callout-text">Платформа продолжает развиваться. Задача остаётся той же: наращивать функционал, сохраняя простоту взаимодействия.</p>
+    </div>
+
+    <p class="section-eyebrow" style="margin-top: 36px; margin-bottom: 0;" data-i18n="eyebrow_3">Команда</p>
+    <div class="team-pills">
+      <span class="pill">Project manager</span>
+      <span class="pill">Design lead</span>
+      <span class="pill">Middle designer × 2</span>
+      <span class="pill">Junior designer</span>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <div class="page-footer">
+    <a href="about-me.html" class="footer-back" aria-label="Все кейсы">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+        <path d="M8 2L3 6.5L8 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span data-i18n="footer_back">Все кейсы</span>
+    </a>
+    <a href="dna-match.html" class="footer-next" aria-label="Следующий кейс">
+      <span class="footer-next-label" data-i18n="footer_next_label">Следующий кейс</span>
+      <span class="footer-next-title">DNA Match →</span>
+    </a>
+  </div>
+
+</div>
+
+<script>
+  // Active dot on scroll
+  const sections = ['overview','insight','process','results'];
+  const dots = document.querySelectorAll('.dot-btn');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        dots.forEach(d => d.classList.remove('active'));
+        const match = document.querySelector(`.dot-btn[data-section="${entry.target.id}"]`);
+        if (match) match.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) observer.observe(el);
+  });
+</script>
+<footer class="site-footer">
+  <span class="site-footer-copy">© 2026 Валерия Шкарбан</span>
+  <a href="https://www.pragmatica.design/lebowski" target="_blank" class="site-footer-font">Шрифт — Lebowski by Pragmatica</a>
+</footer>
+<script>
+const translations = {
+  ru: {
+    back:'Кейсы',
+    discuss:'Обсудить',
+    footer_back:'Все кейсы',
+    footer_next_label:'Следующий кейс',
+    hero_desc:'Платформа для визуализации и изучения семейной истории. Центральный элемент: генеалогическое дерево пользователя на географической карте. Строили с нуля по брифу клиента, итеративно.',
+    dot_0:'Обзор',
+    dot_1:'Идея',
+    dot_2:'Процесс',
+    dot_3:'Результат',
+    eyebrow_0:'Идея',
+    eyebrow_1:'Процесс',
+    eyebrow_2:'Результат',
+    eyebrow_3:'Команда',
+    title_0:'Карта как центральный элемент',
+    title_1:'Итеративно, в 4 фазах',
+    title_2:'От MVP до масштабируемой платформы',
+    body_0:'В традиционных генеалогических сервисах в центре линейное дерево: узлы, ветки, плоская схема. Здесь мы сделали географию семьи главным элементом. Каждый предок отображается точкой на карте, линии показывают миграционные пути рода.',
+    body_1:'История семьи становится пространственной: видно, откуда пришли предки и как менялась география поколение за поколением.',
+    body_2:'Строили с нуля по брифу клиента. Выбрали итеративный подход: после каждой фазы был рабочий продукт, который уже использовали реальные пользователи и давали фидбек.',
+    body_3:'Клиент предоставил пользовательские исследования. На их основе выявили ключевые сценарии использования и спроектировали интерфейс карты с системой фильтров: по линиям рода, временным периодам и типам событий. Фокус на читаемости и навигации при большом объёме данных.',
+    body_4:'Работа в условиях распределённой команды: разработчики на стороне клиента, разные таймзоны. Провели серию звонков по согласованию компонентов и логики взаимодействия. Создали детальные спецификации для элементов, которые реализовывались без нашего участия. Настроили итеративное прототипирование, часть фич дорабатывалась по мере технических возможностей.',
+    body_5:'После стабилизации базовой версии добавили систему слоёв для отображения древних предков, определяемых через загрузку ДНК-файлов. Разработали визуальное различие между историческими миграциями и установленными семейными связями: разные стили точек и линий.',
+    body_6:'Реализовали AI-модуль для расширения генеалогического дерева. Система анализирует имеющиеся данные и предлагает вероятных родственников с помощью двух инструментов. Спроектировали интерфейс YourRoots AI Tools так, чтобы он органично встраивался в основной флоу: посмотрел предложение, принял или отклонил, продолжил работу.',
+    body_7:'За несколько итераций продукт вырос от картографической визуализации до платформы с поддержкой ДНК-данных и AI-исследования родословной. Базовый флоу при этом остался простым.',
+    phase_0:'Исследование, прототип, MVP',
+    phase_1:'Синхронизация с командой разработки',
+    phase_2:'ДНК-слои и расширение визуализации',
+    phase_3:'AI Research Tools',
+    result_0:'Глубокая визуализация — от ближайших родственников до древних предков из ДНК-файла на одной карте',
+    result_1:'Гибкая архитектура — слои и фильтры позволяют добавлять новые источники данных без переработки интерфейса',
+    result_2:'Коллаборация с внешней командой — выстроенный процесс спецификаций и итераций с разработчиками на стороне клиента'
+,
+    meta_client:'Клиент',
+    meta_period:'Период',
+    meta_role:'Роль',
+    meta_type:'Тип',
+    meta_period_val:'2025 — н.в.'
+  },
+  en: {
+    back:'Cases',
+    discuss:'Discuss',
+    footer_back:'All cases',
+    footer_next_label:'Next case',
+    hero_desc:'A platform for visualizing and exploring family history. Core feature: the user\'s family tree on a geographic map. Built from scratch based on client brief, iteratively.',
+    dot_0:'Overview',
+    dot_1:'Insight',
+    dot_2:'Process',
+    dot_3:'Results',
+    eyebrow_0:'Insight',
+    eyebrow_1:'Process',
+    eyebrow_2:'Results',
+    eyebrow_3:'Team',
+    title_0:'Map as the core element',
+    title_1:'Iterative, in 4 phases',
+    title_2:'From MVP to a scalable platform',
+    body_0:'In traditional genealogical services, a linear tree is at the center: nodes, branches, a flat diagram. Here we made family geography the main element. Each ancestor appears as a point on the map, lines show the family\'s migration paths.',
+    body_1:'Family history becomes spatial: you can see where ancestors came from and how the geography changed generation by generation.',
+    body_2:'Built from scratch based on client brief. We chose an iterative approach: after each phase there was a working product that real users were already using and giving feedback on.',
+    body_3:'The client provided user research. Based on it, we identified key usage scenarios and designed the map interface with a filter system: by family lines, time periods and event types. Focus on readability and navigation with large data volumes.',
+    body_4:'Working in a distributed team: developers on the client side, different time zones. Conducted a series of calls to align components and interaction logic. Created detailed specifications for elements being implemented without our participation. Set up iterative prototyping, some features were refined as technical capabilities allowed.',
+    body_5:'After stabilizing the base version, we added a layer system for displaying ancient ancestors, identified through DNA file uploads. Developed visual distinction between historical migrations and established family connections: different point and line styles.',
+    body_6:'Implemented an AI module for expanding the genealogical tree. The system analyzes existing data and suggests probable relatives using two tools. Designed the YourRoots AI Tools interface to organically fit into the main flow: review the suggestion, accept or decline, continue working.',
+    body_7:'Over several iterations the product grew from a map visualization to a platform supporting DNA data and AI genealogy research. The basic flow remained simple.',
+    phase_0:'Research, prototype, MVP',
+    phase_1:'Sync with dev team',
+    phase_2:'DNA layers & expanded visualization',
+    phase_3:'AI Research Tools',
+    result_0:'Deep visualization — from closest relatives to ancient ancestors from DNA file on one map',
+    result_1:'Flexible architecture — layers and filters allow adding new data sources without redesigning the interface',
+    result_2:'Collaboration with external team — established specification and iteration process with client-side developers',
+    meta_client:'Client',
+    meta_period:'Period',
+    meta_role:'Role',
+    meta_type:'Type',
+    meta_period_val:'2025 — present'
+  }
+};
+function setLang(lang) {
+  localStorage.setItem('siteLang', lang);
+  document.getElementById('btnRU').classList.toggle('active', lang==='ru');
+  document.getElementById('btnEN').classList.toggle('active', lang==='en');
+  const t = translations[lang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    if (t[el.dataset.i18n] !== undefined) el.textContent = t[el.dataset.i18n];
+  });
+}
+(function(){ const s=localStorage.getItem('siteLang'); if(s==='en') setLang('en'); else { document.getElementById('btnRU').classList.add('active'); } })();
+</script>
+</body>
+</html>
